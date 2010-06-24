@@ -84,7 +84,7 @@ class MARC8ToUnicode:
 
             mb_flag = is_multibyte(self.g0)
                 
-            if mb_flag:
+            if mb_flag and len(marc8_string) >= pos + 3:
                 code_point = (ord(marc8_string[pos]) * 65536 +
                      ord(marc8_string[pos+1]) * 256 +
                      ord(marc8_string[pos+2]))
