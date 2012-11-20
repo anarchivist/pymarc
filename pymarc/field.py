@@ -84,6 +84,26 @@ class Field(object):
             return subfields[0]
         return None
 
+    def __setitem__(self, code, value):
+        """
+        Set the values of the subfield code in a field:
+
+            field['a'] = 'value'
+
+        Raises KeyError if there is more than one subfield code.
+        """
+        subfields = self.get_subfields(code)
+        if len(subfields) > 1:
+            raise KeyError("more than one code '%s'" % code)
+        elif len(subfields) == 0:
+            raise KeyError("no code '%s'" % code)
+        num_code = len(self.subfields)/2
+        while num_code >= 0:
+            if self.subfields[(num_code*2)-2] == code:
+                self.subfields[(num_code*2)-1] = value
+                break
+            num_code -= 1
+
     def next(self):
         "Needed for iteration."
         while self.__pos < len(self.subfields):
@@ -134,7 +154,7 @@ class Field(object):
         Deletes the first subfield with the specified 'code' and returns 
         its value:
             
-            field.del_subfield('a')
+            field.delete_subfield('a')
 
         If no subfield is found with the specified code None is returned.
         """
@@ -148,7 +168,7 @@ class Field(object):
         
     def is_control_field(self):
         """
-        returns true or false if the field is considered a control field.
+        Returns true or false if the field is considered a control field.
         Control fields lack indicators and subfields.
         """
         if self.tag < '010' and self.tag.isdigit(): 
@@ -166,7 +186,7 @@ class Field(object):
             marc += SUBFIELD_INDICATOR + subfield[0] + subfield[1]
         return marc + END_OF_FIELD
 
-    # alias for backwards compatability
+    # alias for backwards compatibility
     as_marc21 = as_marc
 
     def format_field(self):
@@ -179,6 +199,8 @@ class Field(object):
             return self.data
         fielddata = ''
         for subfield in self:
+	    if subfield[0] == '6':
+	    	continue
             if not self.is_subject_field():
                 fielddata += ' %s' % subfield[1]
             else:

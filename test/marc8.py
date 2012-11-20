@@ -23,6 +23,14 @@ class MARC8Test(TestCase):
         self.assertEquals(type(utitle), unicode)
         self.assertEquals(utitle, u'De la solitude \xe0 la communaut\xe9.')
         
+    def test_marc8_reader_to_unicode_bad_eacc_sequence(self):
+        reader = MARCReader(file('test/bad_eacc_encoding.dat'), to_unicode=True, hide_utf8_warnings=True)
+        try:
+            r =  reader.next()
+            self.assertFalse("Was able to decode invalid MARC8") 
+        except UnicodeDecodeError:
+            self.assertTrue("Caught UnicodeDecodeError as expected") 
+
     def test_marc8_reader_to_unicode_bad_escape(self):
         reader = MARCReader(file('test/bad_marc8_escape.dat'), to_unicode=True)
         r =  reader.next()
@@ -111,6 +119,10 @@ class MARC8Test(TestCase):
     def test_record_create_force_utf8(self, force_utf8=True):
         r = Record(force_utf8=True)
         self.assertEqual(r.leader[9], 'a')
+
+    def test_subscript_2(self):
+        self.assertEqual(marc8_to_unicode('CO\x1bb2\x1bs is a gas'), u'CO\u2082 is a gas')
+        self.assertEqual(marc8_to_unicode('CO\x1bb2\x1bs'), u'CO\u2082')
 
 def suite():
     test_suite = makeSuite(MARC8Test, 'test')

@@ -16,7 +16,11 @@ def marc8_to_unicode(marc8, hide_utf8_warnings=False):
     # XXX: might be good to stash away a converter somehow
     # instead of always re-creating it 
     converter = MARC8ToUnicode(quiet=hide_utf8_warnings)
-    return converter.translate(marc8)
+    try: 
+        return converter.translate(marc8)
+    except IndexError, ie:
+        # convert IndexError into UnicodeDecodeErrors
+        raise UnicodeDecodeError("marc8_to_unicode", marc8, 0, len(marc8), "invalid multibyte character encoding")
 
 
 class MARC8ToUnicode:
@@ -78,6 +82,17 @@ class MARC8ToUnicode:
                     self.g1 = ord(marc8_string[pos+2])
                     pos = pos + 3
                     continue
+                else:
+                    charset = ord(next)
+                    if charset in marc8_mapping.CODESETS:
+                        self.g0 = charset
+                        pos += 2
+                    elif charset == 0x73:
+                        self.g0 = self.basic_latin
+                        pos += 2
+                        if pos == len(marc8_string):
+                            break
+
             
             def is_multibyte(charset):
                 return charset == 0x31

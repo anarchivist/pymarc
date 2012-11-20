@@ -97,9 +97,11 @@ class FieldTest(unittest.TestCase):
         self.assertEqual(self.field.is_subject_field(), False)
         
     def test_format_field(self):
-        self.assertEqual(self.subjectfield.format_field(),
+        self.subjectfield.add_subfield('6', '880-4')
+	self.assertEqual(self.subjectfield.format_field(),
             'Python (Computer program language) -- Poetry.')
-        self.assertEqual(self.field.format_field(), 
+        self.field.add_subfield('6', '880-1')
+	self.assertEqual(self.field.format_field(), 
                 'Huckleberry Finn:  An American Odyssey')
 
     def test_tag_normalize(self):
@@ -111,6 +113,31 @@ class FieldTest(unittest.TestCase):
         self.assertEqual(f.tag, 'CAT')
         self.assertEqual(f['a'], 'foo')
         self.assertEqual(f.is_control_field(), False)
+
+    def test_setitem_no_key(self):
+        try:
+            self.field['h'] = 'error'
+        except KeyError:
+            pass
+        except Exception, e:
+            self.fail('Unexpected exception thrown: %s' % e)
+        else:
+            self.fail('KeyError not thrown')
+
+    def test_setitem_repeated_key(self):
+        try:
+            self.field.add_subfield('a','bar')
+            self.field['a'] = 'error'
+        except KeyError:
+            pass
+        except Exception, e:
+            self.fail('Unexpected exception thrown: %s' % e)
+        else:
+            self.fail('KeyError not thrown')
+
+    def test_setitem(self):
+        self.field['a'] = 'changed'
+        self.assertEqual(self.field['a'], 'changed')
 
 def suite():
     test_suite = unittest.makeSuite(FieldTest, 'test')

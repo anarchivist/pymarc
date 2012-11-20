@@ -1,3 +1,6 @@
+import pymarc
+version = pymarc.__version__
+
 # bootstrap easy_install
 import ez_setup
 ez_setup.use_setuptools()
@@ -10,6 +13,11 @@ try:
 except ImportError:
     install_requires.append('elementtree>=1.2.6')
 
+import sys
+if sys.version_info < (2 , 6):
+    install_requires.append('simplejson>=1.7.3')
+del sys
+
 classifiers = """
 Intended Audience :: Education
 Intended Audience :: Developers
@@ -19,9 +27,11 @@ Programming Language :: Python
 Topic :: Text Processing :: General
 """
 
+import pymarc
+
 setup( 
     name = 'pymarc',
-    version = '2.71',  # remember to update pymarc/__init__.py on release!
+    version = version,
     url = 'http://github.com/edsu/pymarc',
     author = 'Ed Summers',
     author_email = 'ehs@pobox.com',
