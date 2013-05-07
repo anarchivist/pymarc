@@ -9,6 +9,8 @@ pymarc is a python library for working with bibliographic data encoded in
 Installation
 ------------
 
+### easy
+
 You'll probably just want to use pip to install pymarc:
 
     pip install pymarc
@@ -17,8 +19,8 @@ If you'd like to download and install the latest source you'll need git:
 
     git clone git://github.com/edsu/pymarc.git
 
-Run the pymarc test suite to make sure things are in order with the 
-distribution:
+You'll also need [setuptools](https://pypi.python.org/pypi/setuptools#installation-instructions). Once you have the source and setuptools run the pymarc test 
+suite to make sure things are in order with the distribution:
 
     python test.py
 
